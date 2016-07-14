@@ -3,12 +3,36 @@
 To get and compile this you can do like so:
 
 ```sh
-boo!
+# first clone it from GitHub
+git clone https://github.com/eriqande/ms2geno
+
+# then get the submodules
+cd ms2geno
+git submodule init
+git submodule update
+
+# then compile it.  The result is the executable with the 
+# operating system appended. For example on my Mac I get
+# the binary ms2geno-Darwin
+./Compile_ms2geno.sh 
+
+
+# You can do this to get the full built-in help
+ms2geno-Darwin --help-full
+
+
+# and, if you have Dick Hudson's program ms on your system, you can do a small run like this
+ms 800 20  -t 8 -I 2 400 400 75 | ms2geno-Darwin -l 10 -b 150 150 -m 50 50 -u .15 2
+
 ```
 
+Of course, if you want to just use a precompiled binary in the repo, 
+you can do that too.  
 
 
-The program options are listed here:
+
+The program description and options that you get from 
+doing `ms2geno --help-full` are listed below:
 
 ```
 ms2geno  --  convert ms output to genotypes in files

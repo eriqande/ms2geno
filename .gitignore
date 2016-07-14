@@ -2,3 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+BaseFile_*.txt
+MixFile_*.txt
+seedms
+ms2geno_seeds
