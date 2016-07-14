@@ -104,7 +104,7 @@ int AddLocus(msgeno_opts *m, char **list, int segsites, int Loc);
 int ListToInt(char c);
 int SimLoc(msgeno_opts *m, char **list, int segsites, int Loc);
 int FindTheSNP(int segsites, char **list, msgeno_opts *m);
-
+int biggerlist(int nsam, unsigned nmax, char **list);
 
 double nucdiv(int, int, char **);
 double tajd(int, int, double) ;
@@ -228,10 +228,10 @@ while( howmany-count++ ) {
   }while ( line[0] != '/' );
  
   fscanf(pfin,"  segsites: %d", &segsites );
-  if( segsites >= maxsites){
+  if( segsites >= maxsites){ int trash;
 	maxsites = segsites + 10 ;
 	posit = (double *)realloc( posit, maxsites*sizeof( double) ) ;
-        biggerlist(nsam,maxsites, list) ;
+        trash = biggerlist(nsam,maxsites, list) ;
         }
    if( segsites > 0) {
 		fscanf(pfin," %s", astr);
@@ -1163,11 +1163,8 @@ cmatrix(nsam,len)
 	return( m );
 }
 
-        int
-biggerlist(nsam, nmax, list )
-        int nsam ;
-        unsigned nmax ;
-        char ** list ;
+
+int biggerlist(int nsam, unsigned nmax, char **list)
 {
         int i;
 
@@ -1176,6 +1173,7 @@ biggerlist(nsam, nmax, list )
            list[i] = (char *)realloc( list[i],maxsites*sizeof(char) ) ;
            if( list[i] == NULL ) perror( "realloc error. bigger");
            }
+        return(0);
 }                        
 
 
