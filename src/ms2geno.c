@@ -105,6 +105,7 @@ int ListToInt(char c);
 int SimLoc(msgeno_opts *m, char **list, int segsites, int Loc);
 int FindTheSNP(int segsites, char **list, msgeno_opts *m);
 
+
 double nucdiv(int, int, char **);
 double tajd(int, int, double) ;
 double hfay(int, int, char **);
@@ -136,7 +137,7 @@ int main(int argc,char *argv[])
 	/* check to see if the user wants to take input from a file.  If so, open it. */
 	if(strlen(Opts->InputFileName)>0) {
 		if( (pfin=fopen(Opts->InputFileName,"r"))==NULL) {
-			fprintf(stderr,"Error! Failed to open file \"%s\".  Please check that the path is correct, and maybe ensure there are no spaces in the pathname.  Exiting...\n");
+			fprintf(stderr,"Error! Failed to open file \"%s\".  Please check that the path is correct, and maybe ensure there are no spaces in the pathname.  Exiting...\n", Opts->InputFileName);
 			exit(1);
 		}
 	}
