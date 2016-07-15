@@ -123,7 +123,7 @@ int main(int argc,char *argv[])
 	double *posit   ;
 	int   segsites, count  , nadv, probflag  ;
 	double pi , h, th  ,prob ;
-	char dum[20], astr[100] ;
+	char dum[20000], astr[100] ;
 	int  nsegsub, segsub( int nsam, int segsites, char **list ) ;
 	msgeno_opts *Opts;
 	int NumDataSets = 0, Loc=0;
@@ -504,7 +504,7 @@ int FindTheSNP(int segsites, char **list, msgeno_opts *m)
 				return(i);
 			}
 			else if(m->AscSets[j][2]==-2) {
-				printf("We Have A Pop (%d) Counting Genotypes! Site %d.  [0][0]= %d  Het= %d  [1][1]= %d\n",j,i,Genos[0][0],Genos[0][1]+Genos[1][0],Genos[1][1]);
+				//printf("We Have A Pop (%d) Counting Genotypes! Site %d.  [0][0]= %d  Het= %d  [1][1]= %d\n",j,i,Genos[0][0],Genos[0][1]+Genos[1][0],Genos[1][1]);
 				if(Genos[0][0]>0   &&   Genos[0][1]+Genos[1][0]>0   &&  Genos[1][1]>0) {  /* if all three genotypes appear */
 					free(Perm);
 					return(i);
@@ -521,7 +521,7 @@ int FindTheSNP(int segsites, char **list, msgeno_opts *m)
 		
 		/* and, if we got here, we are looking for three genotypes from amongst any of the populations that we looked at */
 		if(m->AllPopsGenoAsc==1) {
-			printf("Counting Total Genotypes:  00= %d  Het= %d  11= %d\n",totGenos[0][0],totGenos[0][1]+totGenos[1][0],totGenos[1][1]);
+			//printf("Counting Total Genotypes:  00= %d  Het= %d  11= %d\n",totGenos[0][0],totGenos[0][1]+totGenos[1][0],totGenos[1][1]);
 			if(totGenos[0][0]>0   &&   totGenos[0][1]+totGenos[1][0]>0   &&  totGenos[1][1]>0) {  /* if all three genotypes appear */
 				free(Perm);
 				return(i);
