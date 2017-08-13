@@ -66,7 +66,7 @@ typedef struct {
 	char ***IDs;  /* to store the IDs of individuals indexed by pop,indiv,character*/
 	int *MinGeno; /* to store the min microsatellite length (which will be negative---this way we can make them all positive) */
 	
-	
+	int Write012;  /* 1 to write SNPs in 012 format. */
 	/* some snp ascertainment stuff */
 	int NumAscPops;  /* number of populations with members in the ascertainment set */
 	int **AscSets;  /* array of ascertainment populations.  For the i-th population in the ascertainment set (starting from 0)
@@ -695,59 +695,132 @@ printf("THESNP : %d\n",theSNP);
 void PrintDataSet(msgeno_opts *m, int DataSetNum) 
 {
 	int i,j,k,a;
-	FILE *out=stdout;
+	FILE *out=stdout, *outpos=stdout, *outindv=stdout;
 	char str[1000];
 	int **LocHash;
+	int totInd = 0;
 	
 	
 	/* print the baseline file */
-	sprintf(str,"BaseFile_%d.txt",DataSetNum);
-	out = fopen(str,"w");
-	
-	fprintf(out,"%d  %d\n",m->TotBase,m->NumLoc);
-	for(i=0;i<m->NumLoc;i++)  {
-		fprintf(out,"Locus_%d\n",i+1);
+	if(m->Write012 == 1) {
+	  sprintf(str,"BaseFile_%d.012",DataSetNum);
+	  out = fopen(str,"w");
+	  sprintf(str,"BaseFile_%d.012.pos",DataSetNum);
+	  outpos = fopen(str,"w");
+	  sprintf(str,"BaseFile_%d.012.indv",DataSetNum);
+	  outindv = fopen(str,"w");
 	}
+	else {
+	  sprintf(str,"BaseFile_%d.txt",DataSetNum);
+	  out = fopen(str,"w");
+	}
+	
+	
+	if(m->Write012 != 1) fprintf(out,"%d  %d\n",m->TotBase,m->NumLoc);
+	
+	for(i=0;i<m->NumLoc;i++)  {
+	  if(m->Write012 == 1) {
+	    fprintf(outpos,"Locus_%d\t%d\n",i+1, i+1);
+	  }
+	  else {
+	    fprintf(out,"Locus_%d\n",i+1);
+	  }
+	}
+	
 	for(i=0;i<m->NumPops;i++)  {
 	
-		fprintf(out,"POP PopNum_%d_\n",i+1);
+	if(m->Write012 != 1) fprintf(out,"POP PopNum_%d_\n",i+1);
+	
 		for(j=0;j<m->NumBase[i];j++) {
-			fprintf(out,"Pop_%d_BaseInd_%d",i+1,j+1);
+		  if(m->Write012 == 1) {
+		    fprintf(outindv,"Pop_%d_BaseInd_%d\n",i+1,j+1);
+		    fprintf(out,"%d",totInd++);
+		  }
+		  else {
+			  fprintf(out,"Pop_%d_BaseInd_%d",i+1,j+1);
+		  }
 			for(k=0;k<m->NumLoc;k++)  {
-				fprintf(out,"   ");
-				for(a=0;a<m->Ploidy;a++)  {
-					fprintf(out," %d",m->Basegenos[i][j][k*m->Ploidy+a]);
-				}
+			  if(m->Write012 == 1) {
+			    fprintf(out,"\t%d",m->Basegenos[i][j][k*2+0] + m->Basegenos[i][j][k*2+1] - 2);
+			  }
+			  else {
+			    fprintf(out,"   ");
+			    for(a=0;a<m->Ploidy;a++)  {
+			      fprintf(out," %d",m->Basegenos[i][j][k*m->Ploidy+a]);
+			    }
+			  }
 			}
 			fprintf(out,"\n");
 		}
 	}
 	fclose(out);
+	if(m->Write012 == 1) {
+	  fclose(outpos);
+	  fclose(outindv);
+	}
 	
 	
 	/* print the mix file */
 	if(m->TotMix>0) {
-		sprintf(str,"MixFile_%d.txt",DataSetNum);
-		out = fopen(str,"w");
+	  /* print the baseline file */
+	  if(m->Write012 == 1) {
+	    sprintf(str,"MixFile_%d.012",DataSetNum);
+	    out = fopen(str,"w");
+	    sprintf(str,"MixFile_%d.012.pos",DataSetNum);
+	    outpos = fopen(str,"w");
+	    sprintf(str,"MixFile_%d.012.indv",DataSetNum);
+	    outindv = fopen(str,"w");
+	  }
+	  else {
+	    sprintf(str,"MixFile_%d.txt",DataSetNum);
+	    out = fopen(str,"w");
+	  }
+	  
+		
 
-		fprintf(out,"%d  %d\n",m->TotMix,m->NumLoc);
+		if(m->Write012 != 1) fprintf(out,"%d  %d\n",m->TotMix,m->NumLoc);
+		
 		for(i=0;i<m->NumLoc;i++)  {
-			fprintf(out,"Locus_%d\n",i+1);
+		  if(m->Write012 == 1) {
+		    fprintf(outpos,"Locus_%d\t%d\n",i+1, i+1);
+		  }
+		  else {
+		    fprintf(out,"Locus_%d\n",i+1);
+		  }
 		}
-		fprintf(out,"POP MixtureSample\n");
+		
+		if(m->Write012 != 1) fprintf(out,"POP MixtureSample\n");
+		
+		
+		totInd = 0;  /* reset to 0 to count up indivs in mixture file */
 		for(i=0;i<m->NumPops;i++)  {
 			for(j=0;j<m->NumMix[i];j++) {
-				fprintf(out,"Pop_%d_MixInd_%d",i+1,j+1);
-				for(k=0;k<m->NumLoc;k++)  {
-					fprintf(out,"   ");
-					for(a=0;a<m->Ploidy;a++)  {
-						fprintf(out," %d",m->Mixgenos[i][j][k*m->Ploidy+a]);
-					}
-				}
-				fprintf(out,"\n");
+			  if(m->Write012 == 1) {
+			    fprintf(outindv,"Pop_%d_MixInd_%d\n",i+1,j+1);
+			    fprintf(out,"%d",totInd++);
+			  }
+			  else {
+			    fprintf(out,"Pop_%d_MixInd_%d",i+1,j+1);
+			  }
+			  for(k=0;k<m->NumLoc;k++)  {
+			    if(m->Write012 == 1) {
+			      fprintf(out,"\t%d",m->Mixgenos[i][j][k*2+0] + m->Mixgenos[i][j][k*2+1] - 2);
+			    }
+			    else {
+			      fprintf(out,"   ");
+			      for(a=0;a<m->Ploidy;a++)  {
+			        fprintf(out," %d",m->Mixgenos[i][j][k*m->Ploidy+a]);
+			      }
+			    }
+			  }
+			  fprintf(out,"\n");
 			}
 		}	
 		fclose(out);
+		if(m->Write012 == 1) {
+		  fclose(outpos);
+		  fclose(outindv);
+		}
 	}
 	
 }
@@ -759,6 +832,7 @@ msgeno_opts *GetMSGenoOpts(int argc, char *argv[])
 		lociF=0,
 		baselineF=0,
 		mixtureF=0,
+		output012F=0,
 		msatF = 0,
 		snpF =0,
 		allpopsascF=0,
@@ -843,6 +917,7 @@ msgeno_opts *GetMSGenoOpts(int argc, char *argv[])
 	m->InputFileName[0]='\0';
 	m->AllPopsGenoAsc=0;
 	m->AllPopsPseudoAFLP=0;
+	m->Write012=0;
 			
 	BEGIN_OPT_LOOP 	 
 		
@@ -927,6 +1002,23 @@ msgeno_opts *GetMSGenoOpts(int argc, char *argv[])
 				}
 			}
 		}	
+		if(OPTION(
+		    Write012 file?,
+		    output012F,
+		    o,
+      write-012,
+      ,
+      issue this to output SNP data in 012 format,
+      If this option is given\054 then the program will write data in 012 format. This 
+       is only compatible with SNPs and ploidy = 2.  012 format produces three files
+       for each Basefile and each Mixfile:  a .012 file\054 a .012.indv file and a .012.pos 
+       file. This option is not required.
+      
+		) ){
+		  if(ARGS_EQ(0)){
+		    m->Write012 = 1;  /* set the global flag that says we should write an 012 file */
+		  }
+		} 
 		if(CLASHABLE_OPTION(
 			Microsatellite Evolution Parameters,
 			msatF,
@@ -1141,6 +1233,16 @@ msgeno_opts *GetMSGenoOpts(int argc, char *argv[])
 		
 	END_OPT_LOOP
 	
+	/* do a quick error check */
+	if(m->MarkerType == MSAT && m->Write012 == 1) {
+	  fprintf(stderr, "Error! Cannot write microsatellites to 012 file\n");
+	  exit(1);
+	}
+	if(m->Ploidy != 2 && m->Write012 == 1) {
+	  fprintf(stderr, "Error! Cannot write ploidy other than 2 to 012 file\n");
+	  exit(1);
+	}
+
 	return(m);
 
 }

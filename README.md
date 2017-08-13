@@ -190,6 +190,12 @@ In the following:
         -b/--baselines are used in the same command line they must have the
         same number of arguments K.
 
+-o , --write-012         
+        If this option is given, then the program will write data in 012
+        format. This is only compatible with SNPs and ploidy = 2. 012 format
+        produces three files for each Basefile and each Mixfile: a .012 file,
+        a .012.indv file and a .012.pos file. This option is not required.
+
 -u , --msat              R1 R2
         R1 is the probability of multistep mutations and R2 is the mean of the
         Poisson distribution that determines the step size of multistep
@@ -286,4 +292,5 @@ In the following:
         because some operating systems may not have good file redirection
         facilities, and because this makes it much easier to use ms2geno with
         the guiLiner front end.
+
 ```
